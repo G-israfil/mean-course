@@ -1,0 +1,19 @@
+@if (posts && posts.length > 0) {
+  @for (post of posts; track post.title){
+    <mat-accordion>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          {{ post.title }}
+        </mat-expansion-panel-header>
+        <p>
+          {{post.content}}
+        </p>
+      </mat-expansion-panel>
+    </mat-accordion>
+  }
+} @else {
+  <p class="mat-body-1">
+    No post added yet.
+  </p>
+}
+
