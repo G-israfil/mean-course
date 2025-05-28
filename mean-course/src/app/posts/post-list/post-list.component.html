@@ -1,5 +1,5 @@
-@if (posts && posts.length > 0) {
-  @for (post of posts; track post.title){
+@if (posts() && posts().length > 0) {
+  @for (post of posts(); track post.title){
     <mat-accordion>
       <mat-expansion-panel>
         <mat-expansion-panel-header>
@@ -8,6 +8,14 @@
         <p>
           {{post.content}}
         </p>
+        <mat-action-row>
+          <button color="accent" mat-button>
+            Edit
+          </button>
+          <button color="warn" mat-button (click)="deletePost(post)">
+            Delete
+          </button>
+        </mat-action-row>
       </mat-expansion-panel>
     </mat-accordion>
   }

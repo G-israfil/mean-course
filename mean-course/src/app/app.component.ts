@@ -1,9 +1,9 @@
-import {Component, signal, WritableSignal} from '@angular/core';
+import {Component} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import {PostCreateComponent} from "./posts/post-create/post-create.component";
 import {HeaderComponent} from "./header/header.component";
 import {PostListComponent} from "./posts/post-list/post-list.component";
-
+import {HttpClient} from "@angular/common/http";
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -12,10 +12,5 @@ import {PostListComponent} from "./posts/post-list/post-list.component";
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'mean-course';
-  posts:any[] = [];
 
-  addNewPost(post:any){
-    this.posts.push(post);
-  }
 }
