@@ -10,6 +10,9 @@ import {PostService} from "../../services/post.service";
 import {MatButton} from "@angular/material/button";
 import {toSignal} from "@angular/core/rxjs-interop";
 import {firstValueFrom} from "rxjs";
+import {RouterLink} from "@angular/router";
+import {MatProgressSpinner} from "@angular/material/progress-spinner";
+import {MatPaginator} from "@angular/material/paginator";
 
 @Component({
   selector: 'app-post-list',
@@ -19,7 +22,10 @@ import {firstValueFrom} from "rxjs";
     MatExpansionPanel,
     MatExpansionPanelHeader,
     MatExpansionPanelActionRow,
-    MatButton
+    MatButton,
+    RouterLink,
+    MatProgressSpinner,
+    MatPaginator
   ],
   templateUrl: './post-list.component.html',
   styleUrl: './post-list.component.scss'
@@ -27,13 +33,15 @@ import {firstValueFrom} from "rxjs";
 export class PostListComponent implements OnInit{
   postService: PostService = inject(PostService);
   private injector = inject(Injector);
-
+  loading: boolean = false;
   posts = signal<Post[]>([]);
   refresh = signal(false);
-
+  paginationFilter = {
+    pageIndex: 0,
+    pageSize: 9999
+  }
   initializeRefreshEffect():void{
     effect(() => {
-      console.log(this.refresh());
       if(this.refresh()){
         this.fetchPosts();
         this.postService.refresh();
@@ -49,27 +57,26 @@ export class PostListComponent implements OnInit{
 
   ngOnInit(): void {
     this.fetchPosts();
-    this.refresh = this.postService.subscribeRefresh();
+    this.refresh = this.postService.subscribeLoading();
     this.initializeRefreshEffect();
   }
 
   async fetchPosts(){
-    this.posts = signal(await firstValueFrom(this.postService.getPosts()));
-    console.log(this.posts());
+    this.loading = true;
+    this.posts = signal(await firstValueFrom(this.postService.getPosts(this.paginationFilter)));
+    this.loading = false;
   }
 
   deletePost(post:Post){
-    this.postService.deletePost(post.id);
+    this.postService.deletePost(post.id!);
   }
-  // posts: any[] = [
-  //   {
-  //   title: 'First Post',content: 'first content of the posts'
-  //   },
-  //   {
-  //     title: 'Second Post',content: 'second content of the posts'
-  //   },
-  //   {
-  //     title: 'Third Post',content: 'third content of the posts'
-  //   },
-  // ]
+
+  getImage(id:string){
+    return `http://localhost:3000/api/posts/${id}/image`;
+  }
+
+  onPageChange(event:any){
+    this.paginationFilter = {...event};
+    this.fetchPosts();
+  }
 }

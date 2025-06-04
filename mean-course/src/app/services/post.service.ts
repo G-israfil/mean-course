@@ -2,7 +2,6 @@ import {inject, Injectable, signal} from '@angular/core';
 import {Post} from "../posts/models/post.model";
 import {HttpClient} from "@angular/common/http";
 import {map} from "rxjs";
-import {PostListResponse} from "../posts/models/post-list.model";
 
 @Injectable({
   providedIn: 'root'
@@ -11,24 +10,62 @@ export class PostService {
   private posts = signal<Post[]>([]);
   httpClient = inject(HttpClient);
   baseUrl = "http://localhost:3000/api";
-  updated = signal<boolean>(false);
+  loading = signal<boolean>(false);
   constructor() { }
 
   addPost(post: Post){
-    return this.httpClient.post(`${this.baseUrl}/posts`,post).subscribe(res => {
-      this.refresh();
-    });
+    const formData = new FormData();
+    formData.append('title',post.title!);
+    formData.append('content',post.content!);
+    formData.append('image',post.image!,post.title);
+
+    return this.httpClient.post(`${this.baseUrl}/posts`,formData).pipe(
+      map((res) => {
+        this.refresh();
+        return res;
+      })
+    );
+  }
+
+  updatePost(post: Post){
+    const formData = new FormData();
+    formData.append('title',post.title!);
+    formData.append('content',post.content!);
+    formData.append("id",post.id!);
+    formData.append('image',post.image!,post.title);
+
+    return this.httpClient.put(`${this.baseUrl}/posts`,formData);
   }
 
   deletePost(id: string){
     return this.httpClient.delete(`${this.baseUrl}/posts/${id}`).subscribe(res => {
-      console.log("deleted successfully");
       this.refresh();
     });
   }
 
-  getPosts(){
-    return this.httpClient.get<any>(`${this.baseUrl}/posts`).pipe(
+  getPost(postId:string){
+    return this.httpClient.get<any>(`${this.baseUrl}/posts/${postId}`).pipe(
+      map(res => {
+        if(res.post){
+          res.post = {
+            id: res.post._id,
+            title: res.post.title,
+            content: res.post.content
+          };
+        }
+        return res.post;
+      }),
+    );
+  }
+
+  getPostImage(postId:string){
+    return this.httpClient.get<any>(`${this.baseUrl}/posts/${postId}/image`);
+  }
+
+  getPosts(paginationInfo?:any){
+    const searchParams = new URLSearchParams(paginationInfo).toString();
+    console.log(searchParams);
+    return this.httpClient.get<any>(`${this.baseUrl}/posts?${searchParams}`).pipe(
       map(res => {
         return res.posts.map((post:any) => {
           return {
@@ -42,10 +79,10 @@ export class PostService {
   }
 
   refresh(){
-    this.updated.set(!this.updated());
+    this.loading.set(!this.loading());
   }
 
-  subscribeRefresh(){
-    return this.updated;
+  subscribeLoading(){
+    return this.loading;
   }
 }
