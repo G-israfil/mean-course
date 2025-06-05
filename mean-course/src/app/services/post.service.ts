@@ -2,13 +2,14 @@ import {inject, Injectable, signal} from '@angular/core';
 import {Post} from "../models/post.model";
 import {HttpClient} from "@angular/common/http";
 import {map} from "rxjs";
+import {environment} from "../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class PostService {
   httpClient = inject(HttpClient);
-  baseUrl = "http://localhost:3000/api";
+  baseUrl = environment.baseUrl;
   loading = signal<boolean>(false);
   constructor() { }
 

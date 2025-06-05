@@ -2,8 +2,6 @@ import { Routes } from '@angular/router';
 import {PostListComponent} from "./posts/post-list/post-list.component";
 import {PostCreateComponent} from "./posts/post-create/post-create.component";
 import {PostEditComponent} from "./posts/post-edit/post-edit.component";
-import {LoginComponent} from "./auth/login/login.component";
-import {RegisterComponent} from "./auth/register/register.component";
 import {authGuard} from "./guard/auth.guard";
 
 export const routes: Routes = [
@@ -19,9 +17,11 @@ export const routes: Routes = [
     canActivate:[authGuard]
   },
   {
-    path: 'auth/login',component: LoginComponent
+    path: 'auth/login',
+    loadComponent: () => import('./auth/login/login.component').then(c => c.LoginComponent)
   },
   {
-    path: 'auth/register',component: RegisterComponent
+    path: 'auth/register',
+    loadComponent: () => import('./auth/register/register.component').then(c => c.RegisterComponent)
   }
 ];

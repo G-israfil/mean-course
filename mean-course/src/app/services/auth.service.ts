@@ -2,6 +2,7 @@ import {inject, Injectable, signal} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {User} from "../models/user.model";
 import {Router} from "@angular/router";
+import {environment} from "../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,7 @@ import {Router} from "@angular/router";
 export class AuthService{
   httpClient = inject(HttpClient);
   router = inject(Router);
-  baseUrl = "http://localhost:3000/api";
+  baseUrl = environment.baseUrl;
   authStatus = signal(false);
   constructor() {
     const token = this.getToken();
