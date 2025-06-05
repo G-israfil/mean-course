@@ -1,0 +1,35 @@
+<mat-card class="container" style="margin-top: 3rem">
+  <mat-card-header>
+    <mat-card-title>
+      <h1>
+        Login
+      </h1>
+    </mat-card-title>
+  </mat-card-header>
+  @if (loading) {
+    <span class="spinner-container">
+      <mat-spinner></mat-spinner>
+    </span>
+  } @else {
+    <form [formGroup]="postForm" (submit)="login()">
+        <mat-form-field>
+          <input matInput type="email" placeholder="Username/Email" formControlName="email">
+          @if (postForm.controls['email'].invalid){
+            <mat-error>
+              Username is mandatory
+            </mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field>
+          <input matInput name="password" type="password" placeholder="Password" formControlName="password">
+          @if (postForm.controls['password'].invalid){
+            <mat-error>
+              Password is mandatory
+            </mat-error>
+          }
+        </mat-form-field>
+      <button color="primary" mat-raised-button type="submit">Login</button>
+    </form>
+    <hr>
+  }
+</mat-card>

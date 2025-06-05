@@ -1,4 +1,5 @@
 <mat-card>
+
   @if (loading) {
     <span class="spinner-container">
       <mat-spinner></mat-spinner>
@@ -21,7 +22,7 @@
       </div>
       @if (imagePreviewString && imagePreviewString !== ''){
         <div class="image-preview">
-          <img [src]="imagePreviewString" alt="image-preview">
+          <img [src]="imagePreviewString" alt="preview">
         </div>
       }
       <mat-form-field>
@@ -37,6 +38,4 @@
     </form>
     <hr>
   }
-
-
 </mat-card>

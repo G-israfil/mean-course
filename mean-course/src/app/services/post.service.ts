@@ -1,5 +1,5 @@
 import {inject, Injectable, signal} from '@angular/core';
-import {Post} from "../posts/models/post.model";
+import {Post} from "../models/post.model";
 import {HttpClient} from "@angular/common/http";
 import {map} from "rxjs";
 
@@ -7,7 +7,6 @@ import {map} from "rxjs";
   providedIn: 'root'
 })
 export class PostService {
-  private posts = signal<Post[]>([]);
   httpClient = inject(HttpClient);
   baseUrl = "http://localhost:3000/api";
   loading = signal<boolean>(false);

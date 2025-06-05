@@ -11,14 +11,16 @@
         <p>
           {{post.content}}
         </p>
-        <mat-action-row>
-          <button color="accent" mat-button [routerLink]="'edit/'+ post.id">
-            Edit
-          </button>
-          <button color="warn" mat-button (click)="deletePost(post)">
-            Delete
-          </button>
-        </mat-action-row>
+        @if(authenticated()){
+          <mat-action-row>
+            <button color="accent" mat-button [routerLink]="'edit/'+ post.id">
+              Edit
+            </button>
+            <button color="warn" mat-button (click)="deletePost(post)">
+              Delete
+            </button>
+          </mat-action-row>
+        }
       </mat-expansion-panel>
     </mat-accordion>
   }

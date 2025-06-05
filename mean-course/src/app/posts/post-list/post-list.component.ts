@@ -1,18 +1,17 @@
-import {Component, effect, inject, Injector, Input, OnInit, signal} from '@angular/core';
+import {Component, effect, inject, Injector, OnInit, signal} from '@angular/core';
 import {
   MatAccordion,
   MatExpansionPanel,
   MatExpansionPanelActionRow,
   MatExpansionPanelHeader
 } from "@angular/material/expansion";
-import {Post} from "../models/post.model";
+import {Post} from "../../models/post.model";
 import {PostService} from "../../services/post.service";
 import {MatButton} from "@angular/material/button";
-import {toSignal} from "@angular/core/rxjs-interop";
-import {firstValueFrom} from "rxjs";
 import {RouterLink} from "@angular/router";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {MatPaginator} from "@angular/material/paginator";
+import {AuthService} from "../../services/auth.service";
 
 @Component({
   selector: 'app-post-list',
@@ -32,10 +31,12 @@ import {MatPaginator} from "@angular/material/paginator";
 })
 export class PostListComponent implements OnInit{
   postService: PostService = inject(PostService);
-  private injector = inject(Injector);
+  authService: AuthService = inject(AuthService);
+  injector = inject(Injector);
   loading: boolean = false;
   posts = signal<Post[]>([]);
   refresh = signal(false);
+  authenticated = signal(false);
   paginationFilter = {
     pageIndex: 0,
     pageSize: 9999
@@ -52,6 +53,15 @@ export class PostListComponent implements OnInit{
     });
   }
 
+  checkAuthorization(){
+    effect(() => {
+      this.authenticated.set(this.authService.getAuthStatus()())
+    },{
+      injector: this.injector,
+      allowSignalWrites: true
+    })
+  }
+
   constructor() {
   }
 
@@ -59,12 +69,15 @@ export class PostListComponent implements OnInit{
     this.fetchPosts();
     this.refresh = this.postService.subscribeLoading();
     this.initializeRefreshEffect();
+    this.checkAuthorization();
   }
 
   async fetchPosts(){
     this.loading = true;
-    this.posts = signal(await firstValueFrom(this.postService.getPosts(this.paginationFilter)));
-    this.loading = false;
+    this.postService.getPosts(this.paginationFilter).subscribe(res => {
+      this.posts.set(res);
+      this.loading = false;
+    })
   }
 
   deletePost(post:Post){
